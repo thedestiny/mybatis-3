@@ -100,12 +100,12 @@ public class Configuration {
 
   protected boolean safeRowBoundsEnabled;
   protected boolean safeResultHandlerEnabled = true;
-  protected boolean mapUnderscoreToCamelCase;
-  protected boolean aggressiveLazyLoading;
+  protected boolean mapUnderscoreToCamelCase; // 下划线转驼峰
+  protected boolean aggressiveLazyLoading; // 懒加载
   protected boolean multipleResultSetsEnabled = true;
-  protected boolean useGeneratedKeys;
+  protected boolean useGeneratedKeys; // 自动生成主键
   protected boolean useColumnLabel = true;
-  protected boolean cacheEnabled = true;
+  protected boolean cacheEnabled = true; // 二级缓存全局开关
   protected boolean callSettersOnNulls;
   protected boolean useActualParamName = true;
   protected boolean returnInstanceForEmptyRow;
@@ -117,7 +117,7 @@ public class Configuration {
   protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
   protected Set<String> lazyLoadTriggerMethods = new HashSet<>(Arrays.asList("equals", "clone", "hashCode", "toString"));
   protected Integer defaultStatementTimeout;
-  protected Integer defaultFetchSize;
+  protected Integer defaultFetchSize; // 默认获取条数
   protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
   protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
   protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
@@ -575,6 +575,7 @@ public class Configuration {
     } else {
       executor = new SimpleExecutor(this, transaction);
     }
+    // cacheEnabled 默认开启 装饰器模式
     if (cacheEnabled) {
       executor = new CachingExecutor(executor);
     }

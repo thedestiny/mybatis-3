@@ -49,7 +49,7 @@ public class SimpleExecutor extends BaseExecutor {
       stmt = prepareStatement(handler, ms.getStatementLog());
       return handler.update(stmt);
     } finally {
-      closeStatement(stmt);
+      closeStatement(stmt);  //关闭statement，意味着下一次使用需要重新开启statement
     }
   }
 
@@ -62,7 +62,7 @@ public class SimpleExecutor extends BaseExecutor {
       stmt = prepareStatement(handler, ms.getStatementLog());
       return handler.<E>query(stmt, resultHandler);
     } finally {
-      closeStatement(stmt);
+      closeStatement(stmt);  //关闭statement，意味着下一次使用需要重新开启statement
     }
   }
 
@@ -82,8 +82,8 @@ public class SimpleExecutor extends BaseExecutor {
   private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
     Statement stmt;
     Connection connection = getConnection(statementLog);
-    stmt = handler.prepare(connection, transaction.getTimeout());
-    handler.parameterize(stmt);
+    stmt = handler.prepare(connection, transaction.getTimeout());  //创建statement
+    handler.parameterize(stmt); //将参数存入statement
     return stmt;
   }
 

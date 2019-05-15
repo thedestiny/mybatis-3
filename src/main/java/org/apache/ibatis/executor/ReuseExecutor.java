@@ -82,12 +82,12 @@ public class ReuseExecutor extends BaseExecutor {
     BoundSql boundSql = handler.getBoundSql();
     String sql = boundSql.getSql();
     if (hasStatementFor(sql)) {
-      stmt = getStatement(sql);
+      stmt = getStatement(sql); //如果已缓存statement则取出
       applyTransactionTimeout(stmt);
     } else {
       Connection connection = getConnection(statementLog);
       stmt = handler.prepare(connection, transaction.getTimeout());
-      putStatement(sql, stmt);
+      putStatement(sql, stmt);  //没有关闭statement
     }
     handler.parameterize(stmt);
     return stmt;
@@ -95,7 +95,8 @@ public class ReuseExecutor extends BaseExecutor {
 
   private boolean hasStatementFor(String sql) {
     try {
-      return statementMap.keySet().contains(sql) && !statementMap.get(sql).getConnection().isClosed();
+      return statementMap.keySet().contains(sql)
+              && !statementMap.get(sql).getConnection().isClosed();   //sql语句就是key，statement是值
     } catch (SQLException e) {
       return false;
     }

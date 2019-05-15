@@ -40,9 +40,9 @@ import org.apache.ibatis.transaction.Transaction;
  */
 public class BatchExecutor extends BaseExecutor {
 
-  public static final int BATCH_UPDATE_RETURN_VALUE = Integer.MIN_VALUE + 1002;
+  public static final int BATCH_UPDATE_RETURN_VALUE = Integer.MIN_VALUE + 1002;  //为何？防无限循环
 
-  private final List<Statement> statementList = new ArrayList<>();
+  private final List<Statement> statementList = new ArrayList<>(); //使用list缓存statement
   private final List<BatchResult> batchResultList = new ArrayList<>();
   private String currentSql;
   private MappedStatement currentStatement;
@@ -58,11 +58,11 @@ public class BatchExecutor extends BaseExecutor {
     final BoundSql boundSql = handler.getBoundSql();
     final String sql = boundSql.getSql();
     final Statement stmt;
-    if (sql.equals(currentSql) && ms.equals(currentStatement)) {
+    if (sql.equals(currentSql) && ms.equals(currentStatement)) { // 判断当前使用sql和statement是否是上一次的statement和sql
       int last = statementList.size() - 1;
       stmt = statementList.get(last);
       applyTransactionTimeout(stmt);
-     handler.parameterize(stmt);//fix Issues 322
+      handler.parameterize(stmt);//fix Issues 322
       BatchResult batchResult = batchResultList.get(last);
       batchResult.addParameterObject(parameterObject);
     } else {
@@ -71,12 +71,12 @@ public class BatchExecutor extends BaseExecutor {
       handler.parameterize(stmt);    //fix Issues 322
       currentSql = sql;
       currentStatement = ms;
-      statementList.add(stmt);
+      statementList.add(stmt);  //否则创建statement并存入
       batchResultList.add(new BatchResult(ms, sql, parameterObject));
     }
   // handler.parameterize(stmt);
-    handler.batch(stmt);
-    return BATCH_UPDATE_RETURN_VALUE;
+    handler.batch(stmt);  //仅仅是存入批处理参数而不执行
+    return BATCH_UPDATE_RETURN_VALUE;  //始终返回一个常量
   }
 
   @Override
@@ -114,12 +114,12 @@ public class BatchExecutor extends BaseExecutor {
       if (isRollback) {
         return Collections.emptyList();
       }
-      for (int i = 0, n = statementList.size(); i < n; i++) {
+      for (int i = 0, n = statementList.size(); i < n; i++) { //批量执行有序集合中的statement
         Statement stmt = statementList.get(i);
         applyTransactionTimeout(stmt);
         BatchResult batchResult = batchResultList.get(i);
         try {
-          batchResult.setUpdateCounts(stmt.executeBatch());
+          batchResult.setUpdateCounts(stmt.executeBatch()); //执行批处理或存储过程
           MappedStatement ms = batchResult.getMappedStatement();
           List<Object> parameterObjects = batchResult.getParameterObjects();
           KeyGenerator keyGenerator = ms.getKeyGenerator();
