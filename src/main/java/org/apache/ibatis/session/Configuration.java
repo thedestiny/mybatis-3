@@ -563,7 +563,7 @@ public class Configuration {
   public Executor newExecutor(Transaction transaction) {
     return newExecutor(transaction, defaultExecutorType);
   }
-
+  // transaction executor
   public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
     executorType = executorType == null ? defaultExecutorType : executorType;
     executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
