@@ -44,6 +44,8 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
+// https://blog.csdn.net/ShewMi/article/details/80224879 mybatis 源码解析
+
 /**
  * @author Clinton Begin
  */
