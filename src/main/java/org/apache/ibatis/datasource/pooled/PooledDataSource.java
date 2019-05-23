@@ -34,27 +34,27 @@ import org.apache.ibatis.logging.LogFactory;
 
 /**
  * This is a simple, synchronous, thread-safe database connection pool.
- *
+ * 一个简单，同步的、线程安全的数据库连接池
  * @author Clinton Begin
  */
-public class PooledDataSource implements DataSource {
+public class PooledDataSource implements DataSource { // 使用连接池的数据源
 
   private static final Log log = LogFactory.getLog(PooledDataSource.class);
 
   private final PoolState state = new PoolState(this);
-
+  // 真正用于创建连接的数据源
   private final UnpooledDataSource dataSource;
 
   // OPTIONAL CONFIGURATION FIELDS
-  protected int poolMaximumActiveConnections = 10;
-  protected int poolMaximumIdleConnections = 5;
-  protected int poolMaximumCheckoutTime = 20000;
-  protected int poolTimeToWait = 20000;
-  protected int poolMaximumLocalBadConnectionTolerance = 3;
-  protected String poolPingQuery = "NO PING QUERY SET";
-  protected boolean poolPingEnabled;
-  protected int poolPingConnectionsNotUsedFor;
-
+  protected int poolMaximumActiveConnections = 10; // 最大活跃连接数
+  protected int poolMaximumIdleConnections = 5; // 最大闲置连接数
+  protected int poolMaximumCheckoutTime = 20000; // 最长使用时间
+  protected int poolTimeToWait = 20000; // 无法取得链接时最大等待时间
+  protected int poolMaximumLocalBadConnectionTolerance = 3; // 最多允许等待几次无效链接
+  protected String poolPingQuery = "NO PING QUERY SET";  // 测试连接是否有效的sql语句
+  protected boolean poolPingEnabled; // 是否允许测试链接
+  protected int poolPingConnectionsNotUsedFor; //  配置一段时间，当连接在这段时间内没有被使用，才允许测试连接是否有效
+  // //根据数据库url、用户名、密码生成一个hash值，唯一标识一个连接池，由这个连接池生成的连接都会带上这个值
   private int expectedConnectionTypeCode;
 
   public PooledDataSource() {
