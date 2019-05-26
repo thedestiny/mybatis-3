@@ -98,7 +98,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       throw new BuilderException("Each XMLConfigBuilder can only be used once.");
     }
     parsed = true;
-    parseConfiguration(parser.evalNode("/configuration"));
+    parseConfiguration(parser.evalNode("/configuration")); // 解析配置文件中 xml /configuration 下所有配置
     return configuration;
   }
 
@@ -110,8 +110,8 @@ public class XMLConfigBuilder extends BaseBuilder {
       // 解析<settings>节点
       Properties settings = settingsAsProperties(root.evalNode("settings"));
       loadCustomVfs(settings);
-      typeAliasesElement(root.evalNode("typeAliases"));
-      pluginElement(root.evalNode("plugins"));
+      typeAliasesElement(root.evalNode("typeAliases")); // 应用别名
+      pluginElement(root.evalNode("plugins")); // 插件
       objectFactoryElement(root.evalNode("objectFactory"));
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
@@ -368,7 +368,7 @@ public class XMLConfigBuilder extends BaseBuilder {
         if ("package".equals(child.getName())) {
           String mapperPackage = child.getStringAttribute("name");
           configuration.addMappers(mapperPackage);
-        } else {
+        } else { // mapper 加载来源 resource url class
           String resource = child.getStringAttribute("resource");
           String url = child.getStringAttribute("url");
           String mapperClass = child.getStringAttribute("class");

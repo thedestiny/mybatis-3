@@ -107,14 +107,14 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   private void configurationElement(XNode context) {
-    try {
+    try { // 获取namespace
       String namespace = context.getStringAttribute("namespace");
       if (namespace == null || namespace.equals("")) {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
       builderAssistant.setCurrentNamespace(namespace);
       cacheRefElement(context.evalNode("cache-ref"));
-      cacheElement(context.evalNode("cache"));
+      cacheElement(context.evalNode("cache")); // 缓存节点解析
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
       resultMapElements(context.evalNodes("/mapper/resultMap"));
       sqlElement(context.evalNodes("/mapper/sql"));
@@ -200,16 +200,17 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   private void cacheElement(XNode context) throws Exception {
-    if (context != null) {
+    if (context != null) { // 默认 perpetual
       String type = context.getStringAttribute("type", "PERPETUAL");
       Class<? extends Cache> typeClass = typeAliasRegistry.resolveAlias(type);
-      String eviction = context.getStringAttribute("eviction", "LRU");
+      String eviction = context.getStringAttribute("eviction", "LRU"); // lru 缓存清空策略
       Class<? extends Cache> evictionClass = typeAliasRegistry.resolveAlias(eviction);
       Long flushInterval = context.getLongAttribute("flushInterval");
       Integer size = context.getIntAttribute("size");
-      boolean readWrite = !context.getBooleanAttribute("readOnly", false);
-      boolean blocking = context.getBooleanAttribute("blocking", false);
+      boolean readWrite = !context.getBooleanAttribute("readOnly", false); //  是否只读
+      boolean blocking = context.getBooleanAttribute("blocking", false); // 是否阻塞
       Properties props = context.getChildrenAsProperties();
+      // 创建缓存对象
       builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);
     }
   }
