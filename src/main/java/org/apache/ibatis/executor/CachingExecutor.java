@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2017 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -55,8 +55,8 @@ public class CachingExecutor implements Executor {
   @Override
   public void close(boolean forceRollback) {
     try {
-      //issues #499, #524 and #573
-      if (forceRollback) { 
+      // issues #499, #524 and #573
+      if (forceRollback) {
         tcm.rollback();
       } else {
         tcm.commit();
@@ -78,16 +78,16 @@ public class CachingExecutor implements Executor {
   }
 
   @Override
+  public <E> Cursor<E> queryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds) throws SQLException {
+    flushCacheIfRequired(ms);
+    return delegate.queryCursor(ms, parameter, rowBounds);
+  }
+
+  @Override
   public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
     BoundSql boundSql = ms.getBoundSql(parameterObject);
     CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
     return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
-  }
-
-  @Override
-  public <E> Cursor<E> queryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds) throws SQLException {
-    flushCacheIfRequired(ms);
-    return delegate.queryCursor(ms, parameter, rowBounds);
   }
 
   @Override
@@ -101,13 +101,13 @@ public class CachingExecutor implements Executor {
         @SuppressWarnings("unchecked")
         List<E> list = (List<E>) tcm.getObject(cache, key);
         if (list == null) {
-          list = delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+          list = delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
           tcm.putObject(cache, key, list); // issue #578 and #116
         }
         return list;
       }
     }
-    return delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+    return delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
   }
 
   @Override
@@ -164,7 +164,7 @@ public class CachingExecutor implements Executor {
 
   private void flushCacheIfRequired(MappedStatement ms) {
     Cache cache = ms.getCache();
-    if (cache != null && ms.isFlushCacheRequired()) {      
+    if (cache != null && ms.isFlushCacheRequired()) {
       tcm.clear(cache);
     }
   }

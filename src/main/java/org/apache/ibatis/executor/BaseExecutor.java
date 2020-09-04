@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2018 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public abstract class BaseExecutor implements Executor {
         }
       }
     } catch (SQLException e) {
-      // Ignore.  There's nothing that can be done at this point.
+      // Ignore. There's nothing that can be done at this point.
       log.warn("Unexpected exception on closing transaction.  Cause: " + e);
     } finally {
       transaction = null;
@@ -138,7 +138,7 @@ public abstract class BaseExecutor implements Executor {
     CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
     //执行带缓存的query
     return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
- }
+  }
 
   @SuppressWarnings("unchecked")
   @Override
@@ -272,11 +272,9 @@ public abstract class BaseExecutor implements Executor {
     }
   }
 
-  protected abstract int doUpdate(MappedStatement ms, Object parameter)
-      throws SQLException;
+  protected abstract int doUpdate(MappedStatement ms, Object parameter) throws SQLException;
 
-  protected abstract List<BatchResult> doFlushStatements(boolean isRollback)
-      throws SQLException;
+  protected abstract List<BatchResult> doFlushStatements(boolean isRollback) throws SQLException;
 
   protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql)
       throws SQLException;
@@ -287,9 +285,7 @@ public abstract class BaseExecutor implements Executor {
   protected void closeStatement(Statement statement) {
     if (statement != null) {
       try {
-        if (!statement.isClosed()) {
-          statement.close();
-        }
+        statement.close();
       } catch (SQLException e) {
         // ignore
       }
@@ -298,8 +294,11 @@ public abstract class BaseExecutor implements Executor {
 
   /**
    * Apply a transaction timeout.
-   * @param statement a current statement
-   * @throws SQLException if a database access error occurs, this method is called on a closed <code>Statement</code>
+   *
+   * @param statement
+   *          a current statement
+   * @throws SQLException
+   *           if a database access error occurs, this method is called on a closed <code>Statement</code>
    * @since 3.4.0
    * @see StatementUtil#applyTransactionTimeout(Statement, Integer, Integer)
    */
@@ -352,7 +351,7 @@ public abstract class BaseExecutor implements Executor {
   public void setExecutorWrapper(Executor wrapper) {
     this.wrapper = wrapper;
   }
-  
+
   private static class DeferredLoad {
 
     private final MetaObject resultObject;
@@ -384,7 +383,7 @@ public abstract class BaseExecutor implements Executor {
     }
 
     public void load() {
-      @SuppressWarnings( "unchecked" )
+      @SuppressWarnings("unchecked")
       // we suppose we get back a List
       List<Object> list = (List<Object>) localCache.getObject(key);
       Object value = resultExtractor.extractObjectFromList(list, targetType);
